@@ -1,0 +1,11 @@
+---
+
+
+- name: "Check whether repository {{ repo }} is enabled"
+  shell: " subscription-manager repos --list-enabled | grep {{ repo }} -A3 | grep Enabled:.*1"
+  ignore_errors: True
+  register: repo_check
+
+- name: "Validate Enables Repository {{ repo }}"
+  set_fact:
+    repos_status: "{{ repos_status + [ { 'message': repo, 'value': repo_check.rc != 0 } ]}}"

@@ -1,0 +1,14 @@
+---
+
+- name: "Check whether {{ repo }} is installed"
+  command: "yum list {{ state }} {{ repo }}"
+  register: package_item_result
+  ignore_errors: True
+
+- set_fact:
+    missing_installed_required_packages: "{{ missing_installed_required_packages + [ repo + ' is not installed' ]}}"
+  when: state == 'installed' and package_item_result.rc != 0
+
+- set_fact:
+    updates_required_packages: "{{ updates_required_packages + [ repo + ' is available for update' ]}}"
+  when: state == 'updates' and package_item_result.rc == 0

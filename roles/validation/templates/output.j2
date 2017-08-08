@@ -1,0 +1,71 @@
+SELinux Checks:
+
+{% for host in groups['all'] %}
+   {{ hostvars[host].inventory_hostname }}:
+    {% if hostvars[host].selinux_status is defined %} {% for item in hostvars[host].selinux_status %}{% if item.message is defined and item.value is defined %} - {{ item.message }}:    {{ item.value }}{% endif %}{% endfor %}{% endif %}
+
+{% endfor %}
+
+Docker Section
+
+{% for host in groups['all'] %}
+ {{ hostvars[host].inventory_hostname }}:
+{% if hostvars[host].docker_status is defined %}
+{% for item in hostvars[host].docker_status %}{% if item.message is defined and item.value is defined %}
+  - {{ item.message }}:    {{ item.value }}
+{% endif %}{% endfor %}{% endif %}{% endfor %}
+
+DNS Lookups
+
+{% for host in groups['all'] %}
+ {{ hostvars[host].inventory_hostname }}:
+   IP Address: {{ hostvars[host]['ansible_default_ipv4']['address'] }}
+   PTR Record: {{ hostvars[host]['ansible_fqdn'] }}
+{% endfor %}
+
+Package and repo information
+
+{% for host in groups['all'] %}
+ {{ hostvars[host].inventory_hostname }}:
+{% if hostvars[host].repos_status is defined %}
+{% for item in hostvars[host].repos_status %}
+{% if item.message is defined and item.value is defined %}
+  - {{ item.message }}:   {{ item.value }}
+{% endif %}{% endfor %}{% endif %}
+{% if hostvars[host].missing_installed_required_packages is defined and hostvars[host].missing_installed_required_packages | length > 0 %}
+{% for item in hostvars[host].missing_installed_required_packages %}
+  - {{ item }}:
+{% endfor %}
+{% else %}
+  - All Packages Installed     True
+{% endif %}
+{% if hostvars[host].updates_required_packages is defined and hostvars[host].updates_required_packages | length > 0 %}
+{% for item in hostvars[host].updates_required_packages %}
+  - {{ item }}:
+{% endfor %}
+{% else %}
+  - All Packages Updated     True
+{% endif %}
+{% endfor %}
+
+
+{% if 'etcd' in groups %}
+ETCD has its own partition:
+
+{% for host in groups['etcd'] %}
+   {{ hostvars[host].inventory_hostname }}:
+    {% if hostvars[host].etcd_validation_status is defined %} {% for item in hostvars[host].etcd_validation_status %}{% if item.message is defined and item.value is defined %} - {{ item.message }}:    {{ item.value }}{% endif %}{% endfor %}{% endif %}
+{% endfor %}
+{% endif %}
+
+
+{% if nfs_boolean  %}
+
+NFS SELinux Booleans:
+
+{% for host in groups['all'] %}
+ {{ hostvars[host].inventory_hostname }}:
+{% if hostvars[host].nfs_booleans_status is defined %}
+{% for item in hostvars[host].nfs_booleans_status %}
+   - {{ item.message }}:    {{ item.value }}
+{% endfor %}{% endif %}{% endfor %}{% endif %}

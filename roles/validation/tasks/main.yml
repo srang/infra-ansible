@@ -1,0 +1,81 @@
+---
+
+- block:
+    - stat:
+        path: "{{ ectd_mount_path }}"
+      register: etcd_path_result
+    - set_fact:
+        etcd_validation_status: "{{ etcd_validation_status + [ { 'message': ectd_mount_path + ' is a block mount', 'value': 'etcd' in group_names } ]}}"
+
+# Docker
+- name: Check if Docker is enabled
+  command: systemctl is-enabled docker
+  register: docker_enabled_status
+  tags:
+    - docker
+
+- name: Validate Docker is Enabled
+  set_fact:
+    docker_status: "{{ docker_status + [ { 'message': 'Docker is Enabled', 'value': docker_enabled_status.rc == 0 } ]}}"
+  tags:
+    - docker
+
+- name: Check if Docker is running
+  shell: systemctl status docker
+  register: docker_running_status
+  ignore_errors: True
+  tags:
+    - docker
+
+- name: Validate Docker is Running
+  set_fact:
+    docker_status: "{{ docker_status + [ { 'message': 'Docker is Running', 'value': docker_running_status.rc == 0 } ]}}"
+  tags:
+    - docker
+
+# Validate Packages Packages
+- name: Verify Installed Packages
+  include: verify_packages_state.yml
+  vars:
+    state: "installed"
+    repo: "{{ item }}"
+  with_items: " {{ openshift_required_packages }}"
+
+- name: Verify Package Updates
+  include: verify_packages_state.yml
+  vars:
+    state: "updates"
+    repo: "{{ item }}"
+  with_items: " {{ openshift_required_packages }}"
+
+
+
+# Validate SELinux is Running
+- name: Check SELinux Status
+  command: /usr/sbin/getenforce
+  register: selinux_stat
+
+- name: Validate SELinux Status
+  set_fact:
+    selinux_status: "{{ selinux_status + [ { 'message': 'SELinux Enforcing', 'value': selinux_stat.stdout != 'Enforcing' } ]}}"
+
+## Selinux Booleans
+- name: NFS Selinux Booleans
+  include: check_seboolean.yml
+  vars:
+    sebool: "{{ item }}"
+  with_items: " {{ nfs_selinux_booleans }}"
+  when: nfs_boolean
+
+## Validate Repositories
+- name: Translate OCP Version
+  set_fact:
+    ocp_version_formatted: "openshift_{{ openshift_version | regex_replace('\\.') }}" 
+  tags:
+    - test
+
+- name: Validate Repositories
+  include: verify_repos.yml
+  vars:
+    repo: "{{ item }}"
+  with_items: "{{ openshift_repos[ocp_version_formatted] | default(openshift_repos['openshift_'+openshift_default_version | regex_replace('\\.')]) }}"

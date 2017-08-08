@@ -1,0 +1,9 @@
+---
+
+- name: "Check SELinux Boolean: {{ sebool }}"
+  command: "/sbin/getsebool {{ sebool }}"
+  register: getsebool_result
+
+- name: Validate SELinux Boolean Result
+  set_fact:
+    nfs_booleans_status: "{{ nfs_booleans_status + [ { 'message': 'SELinux Boolean ' + sebool + ' is not enabled', 'value': getsebool_result.stdout.split('-->')[1] | trim != 'on' } ]}}"

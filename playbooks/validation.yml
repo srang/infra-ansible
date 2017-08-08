@@ -1,0 +1,27 @@
+---
+
+- name: Validation
+  hosts: all
+  roles:
+    - validation
+  post_tasks:
+    - name: Render Template
+      set_fact:
+        rendered_template: "{{ lookup('template', playbook_dir + '/roles/validation/templates/output.j2') }}"
+      delegate_to: localhost
+      run_once: True
+      tags:
+        - docker
+    - name: Create Output File
+      template:
+        src: "{{ playbook_dir }}/roles/validation/templates/output.j2"
+        dest: "{{ playbook_dir }}/ocp-validation.txt"
+      delegate_to: localhost
+      run_once: True
+    - name: Print Output
+      debug:
+        msg: "{{ rendered_template.split('\n') }}"
+      delegate_to: localhost
+      run_once: True
+      tags:
+        - docker

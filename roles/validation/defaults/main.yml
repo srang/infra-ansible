@@ -1,0 +1,45 @@
+---
+
+file_checksum_algorithm: sha1
+openshift_version: 3.5
+openshift_default_version: 3.5
+
+nfs_boolean: True
+nfs_selinux_booleans:
+  - virt_sandbox_use_nfs
+  - virt_use_nfs
+
+
+docker_validate_files:
+ectd_mount_path: /var/lib/etcd
+
+openshift_repos:
+  openshift_35:
+    - "rhel-7-server-ose-3.5-rpms"
+    - "rhel-7-fast-datapath-rpms"
+    - "rhel-7-server-rpms"
+  openshift_34:
+    - "rhel-7-server-ose-3.4-rpms"
+    - "rhel-7-fast-datapath-rpms"
+    - "rhel-7-server-rpms"
+
+openshift_required_packages:
+ - "wget"
+ - "git"
+ - "net-tools"
+ - "bind-utils"
+ - "iptables-services"
+ - "bridge-utils"
+ - "bash-completion"
+ - "atomic-openshift-utils"
+ - "docker"
+
+
+# Storage Arrays
+etcd_validation_status: []
+nfs_booleans_status: []
+selinux_status: []
+repos_status: []
+missing_installed_required_packages: []
+updates_required_packages: []
+docker_status: []

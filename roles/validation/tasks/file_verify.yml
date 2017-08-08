@@ -1,0 +1,6 @@
+---
+
+- name: "Verifying File  {{ file }}"
+  stat:
+    checksum_algorithm: "{{ file_checksum_algorithm }}"
+    path: "{{ file }}"
