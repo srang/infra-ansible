@@ -1,5 +1,5 @@
 AUTHENTICATION_TYPE: Database
-BUILDLOGS_REDIS: {host: {{ redis_host }}, port: 6379, password: {{ redis_password }}}
+BUILDLOGS_REDIS: {host: {{ redis_host }}, port: {{ redis_host_port }}, password: {{ redis_password }}}
 DB_URI: {{ quay_db_uri }}
 DISTRIBUTED_STORAGE_CONFIG:
   default:
@@ -14,7 +14,7 @@ SECRET_KEY: '{{ lookup('password', '/dev/null length=78 chars=digits') }}'
 TESTING: false
 USERFILES_LOCATION: default
 USERFILES_PATH: userfiles/
-USER_EVENTS_REDIS: {host: {{ redis_host }}, port: 6379}
+USER_EVENTS_REDIS: {host: {{ redis_host }}, port: {{ redis_host_port }}, password: {{ redis_password }}}
 USE_CDN: false
 TAG_EXPIRATION_OPTIONS: [0s, 1d, 1w, 2w, 4w]
 ENTERPRISE_LOGO_URL: /static/img/quay-logo.png
