@@ -22,8 +22,8 @@
 - name: Configure Storage Directories
   file:
     state: directory
-    owner: {{ quay_config_owner }}
-    group: {{ quay_config_group }}
+    owner: "{{ quay_config_owner }}"
+    group: "{{ quay_config_group }}"
     mode: g+rw
     path: "{{ item }}"
   with_items:
@@ -103,11 +103,13 @@
   template:
     src: config.yaml.j2
     dest: "{{ quay_config_dir }}/config.yaml"
-    owner: root
-    group: root
+    owner: "{{ quay_config_owner }}"
+    group: "{{ quay_config_group }}"
     mode: g+rw
   notify: Restart quay service
   when: not quay_config_stat_result.stat.exists
 
 - name: Include firewall tasks
   include_tasks: firewall.yml
+  tags:
+    - firewalld
