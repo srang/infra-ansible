@@ -19,6 +19,8 @@ quay_config_dir: /var/lib/quay/config
 quay_container_config_dir: /conf/stack
 quay_storage_dir: /var/lib/quay/storage
 quay_container_storage_dir: /datastorage
+quay_config_owner: root
+quay_config_group: root
 
 # External Databases
 postgresql_db_uri: "postgresql://{{ database_username }}:{{ database_password }}@{{ database_host }}/{{ database_name }}"

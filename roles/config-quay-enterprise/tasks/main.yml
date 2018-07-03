@@ -22,8 +22,8 @@
 - name: Configure Storage Directories
   file:
     state: directory
-    owner: root
-    group: root
+    owner: {{ quay_config_owner }}
+    group: {{ quay_config_group }}
     mode: g+rw
     path: "{{ item }}"
   with_items:
