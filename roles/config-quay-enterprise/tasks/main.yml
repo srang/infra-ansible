@@ -32,8 +32,12 @@
 
 - name: Include systemd configurations
   include_tasks: configure_systemd.yml
+  tags:
+    - systemd
 
 - name: Create SSL Certificates
+  tags:
+    - ssl
   block:
     - name: Create Temporary SSL Directory
       command: mktemp -d /tmp/quay-ssl-XXXXXXX
@@ -72,6 +76,8 @@
       delegate_to: "{{ groups['quay_enterprise'][0] }}"
 
 - name: Copy SSL Certificates
+  tags:
+    - ssl
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -81,6 +87,8 @@
     - { src: "{{ quay_ssl_cert_file }}", dest: "{{ quay_config_dir }}/ssl.cert" }
 
 - name: Delete Local Temporary SSL Directory
+  tags:
+    - ssl
   file:
     state: absent
     path: "{{ ssl_local_tmp_dir.stdout }}"
