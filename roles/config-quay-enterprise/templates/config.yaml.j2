@@ -1,5 +1,5 @@
 AUTHENTICATION_TYPE: Database
-BUILDLOGS_REDIS: {host: {{ redis_host }}, port: 6379}
+BUILDLOGS_REDIS: {host: {{ redis_host }}, port: 6379, password: {{ redis_password }}}
 DB_URI: {{ quay_db_uri }}
 DISTRIBUTED_STORAGE_CONFIG:
   default:
